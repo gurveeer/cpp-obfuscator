@@ -56,7 +56,7 @@ def analyze_files(in_paths, keep_set):
     return list(all_identifiers.keys()), file_stats
 
 
-def obfuscate_files(in_paths, out_base, mapping, keep_set, add_dead_code=False):
+def obfuscate_files(in_paths, out_base, mapping, keep_set, add_dead_code=False, randomize_spacing=False):
     """Obfuscate all input files"""
     processed_files = []
 
@@ -66,7 +66,7 @@ def obfuscate_files(in_paths, out_base, mapping, keep_set, add_dead_code=False):
         out_path.parent.mkdir(parents=True, exist_ok=True)
 
         animate_progress(f"Processing [{idx}/{len(in_paths)}] {in_path.name}", 0.2)
-        process_file(in_path, out_path, mapping, keep_set, add_dead_code)
+        process_file(in_path, out_path, mapping, keep_set, add_dead_code, randomize_spacing)
         processed_files.append(out_path)
 
     return processed_files
@@ -85,6 +85,7 @@ def main():
     parser.add_argument('-m', '--map', help="Mapping file path (default: obfuscation_map.txt)", default='obfuscation_map.txt')
     parser.add_argument('--dry-run', action='store_true', help="Preview candidates without obfuscating")
     parser.add_argument('--dead-code', action='store_true', help="Inject dead code for enhanced obfuscation")
+    parser.add_argument('--randomize-spacing', action='store_true', help="Randomize code spacing for obfuscation")
     args = parser.parse_args()
 
     # Step 1: Initialize
@@ -151,11 +152,14 @@ def main():
         out_base.mkdir(parents=True, exist_ok=True)
         print_info(f"Created output directory: {Colors.DIM}{args.out_dir}{Colors.ENDC}")
 
-    processed_files = obfuscate_files(in_paths, out_base, mapping, keep_set, args.dead_code)
+    processed_files = obfuscate_files(in_paths, out_base, mapping, keep_set, args.dead_code, args.randomize_spacing)
     print_success(f"Obfuscated {Colors.BOLD}{len(processed_files)}{Colors.ENDC} file(s)")
     
     if args.dead_code:
         print_info("Dead code injection enabled for enhanced obfuscation")
+    
+    if args.randomize_spacing:
+        print_info("Spacing randomization enabled for enhanced obfuscation")
 
     # Write mapping file
     print_info("Writing obfuscation map...")

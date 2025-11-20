@@ -147,7 +147,7 @@ def replace_identifiers(code: str, mapping: dict, keep_set):
     return IDENT_RE.sub(repl, code)
 
 
-def process_file(in_path, out_path, mapping, keep_set, add_dead_code=False):
+def process_file(in_path, out_path, mapping, keep_set, add_dead_code=False, randomize_spacing=False):
     """Process a single file and write obfuscated output"""
     text = in_path.read_text(encoding='utf-8')
     no_comments = remove_comments(text)
@@ -160,6 +160,14 @@ def process_file(in_path, out_path, mapping, keep_set, add_dead_code=False):
             obf_text = inject_dead_code(obf_text, num_functions=3, num_classes=2)
         except ImportError:
             pass  # Dead code generator not available
+    
+    # Optionally randomize spacing
+    if randomize_spacing:
+        try:
+            from .spacing_obfuscator import apply_spacing_obfuscation
+            obf_text = apply_spacing_obfuscation(obf_text, level='medium')
+        except ImportError:
+            pass  # Spacing obfuscator not available
     
     out_path.write_text(obf_text, encoding='utf-8')
 

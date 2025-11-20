@@ -173,9 +173,9 @@ def inject_dead_code(code, num_functions=3, num_classes=2):
             insert_pos = i + 1
     
     # Insert dead code
-    lines.insert(insert_pos, "\n// Obfuscation layer")
+    lines.insert(insert_pos, "\n// my Boiler coDe")
     lines.insert(insert_pos + 1, dead_code)
-    lines.insert(insert_pos + 2, "// End obfuscation layer\n")
+    lines.insert(insert_pos + 2, "// I can write the code., but i will not\n")
     
     return '\n'.join(lines)
 

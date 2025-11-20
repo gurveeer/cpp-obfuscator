@@ -27,7 +27,7 @@ def main():
             return run_command([
                 "python", "obfuscate_cpp.py",
                 "input.cpp", "-k", "keep_list.txt",
-                "-o", "obfuscated_out", "--dead-code"
+                "-o", "obfuscated_out", "--dead-code", "--randomize-spacing"
             ])
         else:
             print("""
@@ -85,10 +85,10 @@ Note: Create input.cpp in the root directory for quick obfuscation
             print("Error: Please specify a file")
             sys.exit(1)
         file = sys.argv[2]
-        print("Enhanced obfuscation with dead code injection...")
+        print("Enhanced obfuscation with dead code injection and spacing randomization...")
         return run_command([
             "python", "obfuscate_cpp.py",
-            file, "-k", "keep_list.txt", "--dead-code"
+            file, "-k", "keep_list.txt", "--dead-code", "--randomize-spacing"
         ])
 
     elif command == "test":
