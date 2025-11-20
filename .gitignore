@@ -1,11 +1,34 @@
-bfs.cpp
+# Output directories
 obf_out
+obfuscated_out
+test_output
+obfuscated_output
+
+# Generated files
+obfuscation_map.txt
+
+# User input files for testing
+input.cpp
+obfuscate_input.cpp
+
+# IDE
 .vscode
 vscode
-.gitignore
+
+# Git
 .git
+.gitignore
 .gitattributes
 .gitmodules
-.vscode
-.vscode
-.vscode
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
