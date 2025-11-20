@@ -70,6 +70,12 @@ def gather_identifiers(code: str, keep_set):
             continue
         if name in keep_set:
             continue
+        # Never obfuscate 'main' function
+        if name == 'main':
+            continue
+        # Never obfuscate identifiers starting with __ (compiler/system reserved)
+        if name.startswith('__'):
+            continue
         if name not in identifiers:
             identifiers[name] = None
     return list(identifiers.keys())
@@ -99,8 +105,41 @@ def replace_identifiers(code: str, mapping: dict, keep_set):
     def repl(m):
         name = m.group(0)
         pos = m.start()
+        end_pos = m.end()
+        
+        # Don't replace if inside string literal
         if is_in_spans(pos, spans):
             return name
+        
+        # Check if this is part of a type cast like (__int128) or (long long)
+        # Type casts have pattern: (type) or (type1 type2)
+        # We need to be more careful - only skip if it's clearly a type cast
+        if pos > 0 and code[pos-1] == '(':
+            # Look ahead to see if this looks like a type cast
+            # Type cast pattern: (identifier) followed by something that's not an identifier
+            if end_pos < len(code) and code[end_pos] == ')':
+                # Check what comes after the closing paren
+                next_char_pos = end_pos + 1
+                while next_char_pos < len(code) and code[next_char_pos].isspace():
+                    next_char_pos += 1
+                if next_char_pos < len(code):
+                    next_char = code[next_char_pos]
+                    # If followed by identifier or number, it's likely a type cast
+                    if next_char.isalnum() or next_char == '_' or next_char == '(':
+                        # This looks like a type cast, don't replace
+                        return name
+        
+        # Check if this is after :: (namespace/scope resolution)
+        if pos >= 2 and code[pos-2:pos] == '::':
+            # This is after ::, don't replace
+            return name
+        
+        # Check if this is before :: (namespace qualifier)
+        if end_pos < len(code) - 1 and code[end_pos:end_pos+2] == '::':
+            # This is before ::, don't replace
+            return name
+        
+        # Normal replacement
         if name in mapping:
             return mapping[name]
         return name
@@ -108,11 +147,20 @@ def replace_identifiers(code: str, mapping: dict, keep_set):
     return IDENT_RE.sub(repl, code)
 
 
-def process_file(in_path, out_path, mapping, keep_set):
+def process_file(in_path, out_path, mapping, keep_set, add_dead_code=False):
     """Process a single file and write obfuscated output"""
     text = in_path.read_text(encoding='utf-8')
     no_comments = remove_comments(text)
     obf_text = replace_identifiers(no_comments, mapping, keep_set)
+    
+    # Optionally inject dead code for enhanced obfuscation
+    if add_dead_code:
+        try:
+            from .dead_code_generator import inject_dead_code
+            obf_text = inject_dead_code(obf_text, num_functions=3, num_classes=2)
+        except ImportError:
+            pass  # Dead code generator not available
+    
     out_path.write_text(obf_text, encoding='utf-8')
 
 

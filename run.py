@@ -27,7 +27,7 @@ def main():
             return run_command([
                 "python", "obfuscate_cpp.py",
                 "input.cpp", "-k", "keep_list.txt",
-                "-o", "obfuscated_out"
+                "-o", "obfuscated_out", "--dead-code"
             ])
         else:
             print("""
@@ -42,6 +42,7 @@ Default: If no command given, obfuscates input.cpp (if it exists)
 Commands:
   preview <file>       Preview obfuscation (dry-run)
   obfuscate <file>     Obfuscate with keep-list
+  obfuscate+ <file>    Obfuscate with dead code injection
   test                 Run test (uses obfuscate_input.cpp or test_example.cpp)
   clean                Remove output directories
   help                 Show this help
@@ -77,6 +78,17 @@ Note: Create input.cpp in the root directory for quick obfuscation
         return run_command([
             "python", "obfuscate_cpp.py",
             file, "-k", "keep_list.txt"
+        ])
+
+    elif command == "obfuscate+":
+        if len(sys.argv) < 3:
+            print("Error: Please specify a file")
+            sys.exit(1)
+        file = sys.argv[2]
+        print("Enhanced obfuscation with dead code injection...")
+        return run_command([
+            "python", "obfuscate_cpp.py",
+            file, "-k", "keep_list.txt", "--dead-code"
         ])
 
     elif command == "test":

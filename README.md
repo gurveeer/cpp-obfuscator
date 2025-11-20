@@ -7,6 +7,7 @@ Advanced C++ identifier obfuscation tool with a sleek hacker-themed terminal int
 ## ✨ Features
 
 - 🎯 **Smart Obfuscation**: Replaces identifiers with binary-style obfuscated names
+- 🎭 **Dead Code Injection**: Adds fake code blocks that never execute (NEW!)
 - 🛡️ **Protected Identifiers**: Keep standard library and custom identifiers safe
 - 🔄 **Reversible Mapping**: Generate mapping files for deobfuscation
 - 📊 **Visual Progress**: Real-time progress indicators and statistics
@@ -53,6 +54,7 @@ options:
   -k, --keep FILE       Keep-list file (one identifier per line)
   -m, --map FILE        Mapping file path (default: obfuscation_map.txt)
   --dry-run             Preview candidates without obfuscating
+  --dead-code           Inject dead code for enhanced obfuscation (NEW!)
 ```
 
 ## 📝 Keep List

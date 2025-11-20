@@ -28,6 +28,12 @@ from .ui import (
 
 from .file_scanner import discover_cpp_files
 
+try:
+    from .dead_code_generator import inject_dead_code, generate_dead_function
+except ImportError:
+    inject_dead_code = None
+    generate_dead_function = None
+
 __all__ = [
     # Obfuscator
     'CPP_KEYWORDS',

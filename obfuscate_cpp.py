@@ -56,7 +56,7 @@ def analyze_files(in_paths, keep_set):
     return list(all_identifiers.keys()), file_stats
 
 
-def obfuscate_files(in_paths, out_base, mapping, keep_set):
+def obfuscate_files(in_paths, out_base, mapping, keep_set, add_dead_code=False):
     """Obfuscate all input files"""
     processed_files = []
 
@@ -66,7 +66,7 @@ def obfuscate_files(in_paths, out_base, mapping, keep_set):
         out_path.parent.mkdir(parents=True, exist_ok=True)
 
         animate_progress(f"Processing [{idx}/{len(in_paths)}] {in_path.name}", 0.2)
-        process_file(in_path, out_path, mapping, keep_set)
+        process_file(in_path, out_path, mapping, keep_set, add_dead_code)
         processed_files.append(out_path)
 
     return processed_files
@@ -84,6 +84,7 @@ def main():
     parser.add_argument('-k', '--keep', help="Keep-list file (one identifier per line)", default=None)
     parser.add_argument('-m', '--map', help="Mapping file path (default: obfuscation_map.txt)", default='obfuscation_map.txt')
     parser.add_argument('--dry-run', action='store_true', help="Preview candidates without obfuscating")
+    parser.add_argument('--dead-code', action='store_true', help="Inject dead code for enhanced obfuscation")
     args = parser.parse_args()
 
     # Step 1: Initialize
@@ -150,8 +151,11 @@ def main():
         out_base.mkdir(parents=True, exist_ok=True)
         print_info(f"Created output directory: {Colors.DIM}{args.out_dir}{Colors.ENDC}")
 
-    processed_files = obfuscate_files(in_paths, out_base, mapping, keep_set)
+    processed_files = obfuscate_files(in_paths, out_base, mapping, keep_set, args.dead_code)
     print_success(f"Obfuscated {Colors.BOLD}{len(processed_files)}{Colors.ENDC} file(s)")
+    
+    if args.dead_code:
+        print_info("Dead code injection enabled for enhanced obfuscation")
 
     # Write mapping file
     print_info("Writing obfuscation map...")
